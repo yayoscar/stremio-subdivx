@@ -72,7 +72,7 @@ func NewSubdivx(flareSolverrURL string) Subdivx {
 			Jar:       jar,
 		},
 		flareSolverrClient: &http.Client{
-			Timeout: 90 * time.Second,
+			Timeout: 150 * time.Second,
 		},
 		flareSolverrURL:  flareSolverrURL,
 		versionREMatcher: regexp.MustCompile(`>v([0-9.a-z]+)<`),
@@ -111,7 +111,7 @@ func (s *subdivx) ensureCFClearance(ctx context.Context) error {
 	reqBody, _ := json.Marshal(map[string]interface{}{
 		"cmd":        "request.get",
 		"url":        s.baseURL,
-		"maxTimeout": 60000,
+		"maxTimeout": 120000,
 	})
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.flareSolverrURL+"/v1", bytes.NewReader(reqBody))
