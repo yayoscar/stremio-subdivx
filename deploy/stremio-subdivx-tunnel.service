@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloudflare Tunnel for Stremio Subdivx
+After=stremio-subdivx.service
+
+[Service]
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/cloudflared tunnel --url http://localhost:3593 --no-autoupdate
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+[Unit]
+Description=Stremio Subdivx Addon
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=5
+ExecStartPre=-/usr/bin/docker rm -f stremio-subdivx
+ExecStart=/usr/bin/docker run --rm --name stremio-subdivx \
+  -p 3593:3593 \
+  -v /srv/apps/stremio-subdivx/.cache:/app/.cache \
+  stremio-subdivx-allinone
+ExecStop=/usr/bin/docker stop stremio-subdivx
+
+[Install]
+WantedBy=multi-user.target
