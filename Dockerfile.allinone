@@ -20,7 +20,8 @@ RUN CGO_ENABLED=1 CC=x86_64-alpine-linux-musl-gcc go build -trimpath -ldflags="-
 FROM ghcr.io/flaresolverr/flaresolverr:latest
 COPY --from=gobuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=gobuilder /app/.bin/stremio-subdivx /usr/local/bin/stremio-subdivx
-COPY --chmod=755 entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 EXPOSE 3593
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/entrypoint.sh"]
