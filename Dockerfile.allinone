@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 FROM node:18-alpine AS nodebuilder
 WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
@@ -16,12 +15,15 @@ COPY --from=nodebuilder /app/frontend/dist frontend/dist
 COPY cmd cmd
 COPY internal internal
 COPY pkg pkg
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x entrypoint.sh
 RUN CGO_ENABLED=1 CC=x86_64-alpine-linux-musl-gcc go build -trimpath -ldflags="-s -w -extldflags '-static'" -o .bin/stremio-subdivx cmd/addon/*
 
 FROM ghcr.io/flaresolverr/flaresolverr:latest
+USER root
 COPY --from=gobuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=gobuilder /app/.bin/stremio-subdivx /usr/local/bin/stremio-subdivx
-COPY --chmod=755 entrypoint.sh /entrypoint.sh
+COPY --from=gobuilder /app/entrypoint.sh /entrypoint.sh
 EXPOSE 3593
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/entrypoint.sh"]
