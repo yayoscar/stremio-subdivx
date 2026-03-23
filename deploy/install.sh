@@ -46,26 +46,35 @@ make docker-build-allinone
 # 4. Create cache directory
 mkdir -p "$PROJECT_DIR/.cache"
 
-# 5. Install systemd services
-echo "==> Installing systemd services..."
+# 5. Stop old services if they exist
+systemctl stop stremio-subdivx-tunnel 2>/dev/null || true
+systemctl disable stremio-subdivx-tunnel 2>/dev/null || true
+systemctl stop stremio-subdivx 2>/dev/null || true
+
+# 6. Install systemd service
+echo "==> Installing systemd service..."
 cp "$SCRIPT_DIR/stremio-subdivx.service" /etc/systemd/system/
-cp "$SCRIPT_DIR/stremio-subdivx-tunnel.service" /etc/systemd/system/
 systemctl daemon-reload
 
-# 6. Enable and start services
-systemctl enable stremio-subdivx stremio-subdivx-tunnel
+# 7. Enable and start
+systemctl enable stremio-subdivx
 systemctl start stremio-subdivx
-echo "==> Waiting for addon to start..."
-sleep 10
-systemctl start stremio-subdivx-tunnel
+
+echo ""
+echo "==> Waiting for tunnel URL..."
+sleep 15
+
+TUNNEL_URL=$(journalctl -u stremio-subdivx --no-pager | grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' | tail -1 || true)
 
 echo ""
 echo "==> Installation complete!"
 echo ""
-echo "To get your HTTPS URL, run:"
-echo "  journalctl -u stremio-subdivx-tunnel -f"
-echo ""
-echo "Look for a line like:"
-echo '  https://xxx-yyy-zzz.trycloudflare.com'
+if [ -n "$TUNNEL_URL" ]; then
+  echo "Your addon URL: $TUNNEL_URL"
+else
+  echo "To get your HTTPS URL, run:"
+  echo "  sudo journalctl -u stremio-subdivx -f"
+  echo "  Look for: https://xxx.trycloudflare.com"
+fi
 echo ""
 echo "Paste that URL in Stremio to install the addon."

@@ -4,13 +4,11 @@ After=docker.service
 Requires=docker.service
 
 [Service]
+Type=simple
 Restart=always
-RestartSec=5
+RestartSec=10
 ExecStartPre=-/usr/bin/docker rm -f stremio-subdivx
-ExecStart=/usr/bin/docker run --rm --name stremio-subdivx \
-  -p 3593:3593 \
-  -v /srv/apps/stremio-subdivx/.cache:/app/.cache \
-  stremio-subdivx-allinone
+ExecStart=/srv/apps/stremio-subdivx/deploy/start-tunnel.sh
 ExecStop=/usr/bin/docker stop stremio-subdivx
 
 [Install]
