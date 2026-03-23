@@ -92,6 +92,7 @@ func (a *App) SubtitlesHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	paramsID = strings.TrimSuffix(paramsID, ".json")
 	span.SetAttributes(attribute.String("param.id", paramsID))
 
 	var imdbID string
