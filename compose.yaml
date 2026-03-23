@@ -6,12 +6,23 @@ services:
     restart: unless-stopped
     environment:
       - SERVICE_ENVIRONMENT=dk
+      - OTEL_ENABLED=true
       - OTEL_EXPORTER_ENDPOINT=otel-collector:4317
       - LOKI_HOST=http://loki:3100
+      - FLARESOLVERR_URL=http://flaresolverr:8191
     ports:
       - "3593:3593" # stremio-subdivx
     volumes:
       - ./.cache:/app/.cache
+    depends_on:
+      - flaresolverr
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    ports:
+      - "8191:8191" # flaresolverr
 
   grafana:
     image: grafana/grafana:12.0.2

@@ -1,0 +1,16 @@
+app = 'stremio-subdivx-flaresolverr'
+primary_region = 'eze'
+
+[build]
+  image = 'ghcr.io/flaresolverr/flaresolverr:latest'
+
+[env]
+  LOG_LEVEL = 'info'
+
+# No [http_service] — FlareSolverr is only accessible internally via
+# stremio-subdivx-flaresolverr.internal:8191
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

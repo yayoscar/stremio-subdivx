@@ -10,6 +10,6 @@ type Title struct {
 
 // IMDB defines the methods to interact with the IMDB service.
 type IMDB interface {
-	// GetTitle gets a Title by its ID.
-	GetTitle(ctx context.Context, imdbID string) (*Title, error)
+	// GetTitle gets a Title by its ID and type ("movie" or "series").
+	GetTitle(ctx context.Context, titleType string, imdbID string) (*Title, error)
 }

@@ -1,0 +1,25 @@
+app = 'stremio-subdivx'
+primary_region = 'eze'
+
+[build]
+
+[env]
+  SERVICE_ENVIRONMENT = 'fly'
+  OTEL_ENABLED = 'false'
+  FLARESOLVERR_URL = 'http://stremio-subdivx-flaresolverr.internal:8191'
+
+[http_service]
+  internal_port = 3593
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[mounts]
+  source = 'subdivx_cache'
+  destination = '/app/.cache'

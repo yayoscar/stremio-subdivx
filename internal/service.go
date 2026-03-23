@@ -146,7 +146,7 @@ func (s *stremioService) GetSubtitles(ctx context.Context, titleType string, imd
 	imdbTitle, err := cache.Memoize[imdb.Title](cacheKey, cacheTTL, func() (*imdb.Title, error) {
 
 		cacheResult = "miss"
-		title, err := s.imdb.GetTitle(ctx, imdbID)
+		title, err := s.imdb.GetTitle(ctx, titleType, imdbID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to imdb.IMDB.GetTitle: %w", err)
 		}

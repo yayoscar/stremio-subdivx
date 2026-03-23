@@ -36,8 +36,10 @@ type config struct {
 	ServiceName          string `env:"SERVICE_NAME" envDefault:"stremio-subdivx"`
 	ServiceEnvironment   string `env:"SERVICE_ENVIRONMENT" envDefault:"lcl"`
 	ServiceVersion       string `env:"SERVICE_VERSION" envDefault:"v0.0.11"`
+	OtelEnabled          bool   `env:"OTEL_ENABLED" envDefault:"false"`
 	OtelExporterEndpoint string `env:"OTEL_EXPORTER_ENDPOINT" envDefault:"127.0.0.1:4317"`
-	LokiHost             string `env:"LOKI_HOST" envDefault:"http://127.0.0.1:3100"`
+	LokiHost             string `env:"LOKI_HOST" envDefault:""`
+	FlareSolverrURL      string `env:"FLARESOLVERR_URL" envDefault:"http://127.0.0.1:8191"`
 	StatsWSChannel       string `env:"STATS_WS_CHANNEL" envDefault:"stremio-subdivx:stats"`
 }
 
@@ -73,20 +75,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	instrumentationShutdown, err := common.InitInstrumentation(cfg.ServiceName, cfg.ServiceVersion, cfg.ServiceEnvironment, cfg.OtelExporterEndpoint)
-	if err != nil {
-		common.Log.Error("Failed to common.InitInstrumentation", "err", err)
-		os.Exit(1)
+	var instrumentationShutdown func(ctx context.Context)
+	if cfg.OtelEnabled {
+		instrumentationShutdown, err = common.InitInstrumentation(cfg.ServiceName, cfg.ServiceVersion, cfg.ServiceEnvironment, cfg.OtelExporterEndpoint)
+		if err != nil {
+			common.Log.Error("Failed to common.InitInstrumentation", "err", err)
+			os.Exit(1)
+		}
 	}
 
 	stremioService := internal.NewStremioService(
 		cfg.StatsWSChannel,
-		imdb.NewStalkrIMDB(),
-		subdivx.NewSubdivx(),
+		imdb.NewCinemetaIMDB(),
+		subdivx.NewSubdivx(cfg.FlareSolverrURL),
 		loki.NewLoki(cfg.LokiHost),
 	)
 
-	go stremioService.StartPollingStats(1 * time.Minute)
+	if cfg.LokiHost != "" {
+		go stremioService.StartPollingStats(1 * time.Minute)
+	}
 
 	app, err := internal.NewApp(stremioService, stremioManifest, cfg.AddonHost)
 	if err != nil {

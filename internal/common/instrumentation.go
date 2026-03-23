@@ -96,10 +96,10 @@ func InitInstrumentation(serviceName, serviceVersion, serviceEnvironment, export
 }
 
 // CacheGetsTotalIncr increases in 1 a metric for tracking cache hits and misses
-var CacheGetsTotalIncr func(ctx context.Context, keyPrefix, result string)
+var CacheGetsTotalIncr = func(ctx context.Context, keyPrefix, result string) {}
 
 // SubtitlesDownloadsTotalIncr increases in 1 a metric for tracking subtitles downloads
-var SubtitlesDownloadsTotalIncr func(ctx context.Context)
+var SubtitlesDownloadsTotalIncr = func(ctx context.Context) {}
 
 func createCustomMeters(serviceName, serviceVersion, serviceEnvironment string) error {
 	meter := otel.Meter(serviceName)
