@@ -32,7 +32,7 @@ docker-run: docker-build
 		$(APP)
 
 docker-build-allinone:
-	@docker build -f Dockerfile.allinone . --tag $(APP)-allinone
+	@DOCKER_BUILDKIT=1 docker build -f Dockerfile.allinone . --tag $(APP)-allinone
 
 docker-run-allinone: docker-build-allinone
 	docker run --rm --name $(APP)-allinone \
