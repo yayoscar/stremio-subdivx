@@ -138,17 +138,18 @@ func (a *App) SubtitlesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := stremio.Subtitles{
-		Subtitles: make([]stremio.Subtitle, 0, len(subtitles.IDs)),
+		Subtitles: make([]stremio.Subtitle, 0, len(subtitles.Subtitles)),
 	}
-	for _, id := range subtitles.IDs {
+	for _, sub := range subtitles.Subtitles {
 		response.Subtitles = append(response.Subtitles, stremio.Subtitle{
-			ID:   id,
-			Lang: subtitles.Lang,
-			URL:  fmt.Sprintf("%s/subdivx/%s", a.AddonHost, id),
+			ID:          sub.ID,
+			Lang:        subtitles.Lang,
+			URL:         fmt.Sprintf("%s/subdivx/%s", a.AddonHost, sub.ID),
+			SubEncoding: sub.Title,
 		})
 	}
 
-	if subtitles.Year < time.Now().Year()-1 && len(subtitles.IDs) > 1 {
+	if subtitles.Year < time.Now().Year()-1 && len(subtitles.Subtitles) > 1 {
 		w.Header().Set("CDN-Cache-Control", "public, max-age=1296000")
 		w.Header().Set("Cache-Control", "public, max-age=1296000")
 	} else {

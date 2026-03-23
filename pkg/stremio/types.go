@@ -20,9 +20,10 @@ type CatalogItem struct {
 
 // Subtitle represents a Stremio subtitle
 type Subtitle struct {
-	ID   string `json:"id"`
-	Lang string `json:"lang"`
-	URL  string `json:"url"`
+	ID          string `json:"id"`
+	Lang        string `json:"lang"`
+	URL         string `json:"url"`
+	SubEncoding string `json:"SubEncoding,omitempty"`
 }
 
 // Subtitles represents a collection of subtitle entries.

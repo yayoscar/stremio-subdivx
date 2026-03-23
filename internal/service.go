@@ -28,10 +28,16 @@ import (
 	"golang.org/x/text/transform"
 )
 
-// Subtitles struct holds information about subtitles, including their IDs, language, and the year of the content they are associated with.
+// SubtitleInfo holds a subtitle's ID and display title.
+type SubtitleInfo struct {
+	ID    string
+	Title string
+}
+
+// Subtitles struct holds information about subtitles, including their metadata, language, and the year of the content they are associated with.
 type Subtitles struct {
-	// IDs is a list of subtitle IDs.
-	IDs []string
+	// Subtitles is a list of subtitle info with ID and title.
+	Subtitles []SubtitleInfo
 	// Lang is the language of the subtitles.
 	Lang string
 	// Year is the year of the content the subtitles are for.
@@ -209,16 +215,17 @@ func (s *stremioService) GetSubtitles(ctx context.Context, titleType string, imd
 
 	type ScoredSubtitle struct {
 		ID    int
+		Title string
 		Score int
 	}
 
 	subdivxScoredSubtitles := make([]ScoredSubtitle, 0, len(subdivxSubtitles.Subtitles))
 	for _, subdivxSubtitle := range subdivxSubtitles.Subtitles {
-		subdivxScoredSubtitle := ScoredSubtitle{
+		subdivxScoredSubtitles = append(subdivxScoredSubtitles, ScoredSubtitle{
 			ID:    subdivxSubtitle.ID,
+			Title: subdivxSubtitle.Title,
 			Score: subdivxSubtitle.Score(filename),
-		}
-		subdivxScoredSubtitles = append(subdivxScoredSubtitles, subdivxScoredSubtitle)
+		})
 	}
 	sort.Slice(subdivxScoredSubtitles, func(i, j int) bool {
 		return subdivxScoredSubtitles[i].Score > subdivxScoredSubtitles[j].Score
@@ -226,18 +233,21 @@ func (s *stremioService) GetSubtitles(ctx context.Context, titleType string, imd
 
 	ids := make([]int, len(subdivxScoredSubtitles))
 	scores := make([]int, len(subdivxScoredSubtitles))
-	idsString := make([]string, len(subdivxScoredSubtitles))
+	subtitleInfos := make([]SubtitleInfo, len(subdivxScoredSubtitles))
 	for i, item := range subdivxScoredSubtitles {
 		ids[i] = item.ID
 		scores[i] = item.Score
-		idsString[i] = strconv.Itoa(item.ID)
+		subtitleInfos[i] = SubtitleInfo{
+			ID:    strconv.Itoa(item.ID),
+			Title: item.Title,
+		}
 	}
 	common.Log.InfoContext(ctx, "Found subtitles", "title", subdivxSearchTerm, "ids", ids, "scores", scores)
 
 	return &Subtitles{
-		IDs:  idsString,
-		Lang: "spa",
-		Year: imdbTitle.Year,
+		Subtitles: subtitleInfos,
+		Lang:      "spa",
+		Year:      imdbTitle.Year,
 	}, nil
 
 }
