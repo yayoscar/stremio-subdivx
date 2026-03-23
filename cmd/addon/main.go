@@ -146,7 +146,7 @@ func main() {
 	}))
 	r.Handle("GET /manifest.json", otelhttp.WithRouteTag("/manifest.json", http.HandlerFunc(app.ManifestHandler)))
 	r.Handle("GET /subtitles/{type}/{id}/*", otelhttp.WithRouteTag("/subtitles/{type}/{id}/*", http.HandlerFunc(app.SubtitlesHandler)))
-	r.Handle("GET /subtitles/{type}/{id}.json", otelhttp.WithRouteTag("/subtitles/{type}/{id}.json", http.HandlerFunc(app.SubtitlesHandler)))
+	r.Handle("GET /subtitles/{type}/{id}", otelhttp.WithRouteTag("/subtitles/{type}/{id}", http.HandlerFunc(app.SubtitlesHandler)))
 	r.Handle("GET /subdivx/{id}", otelhttp.WithRouteTag("/subdivx/{id}", http.HandlerFunc(app.SubdivxSubtitleHandler)))
 	r.Handle("GET /ws", otelhttp.WithRouteTag("/ws", http.HandlerFunc(app.WebsocketHandler)))
 	r.Handle("/*", http.FileServer(http.FS(distFS)))
