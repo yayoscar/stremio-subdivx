@@ -142,10 +142,10 @@ func (a *App) SubtitlesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, sub := range subtitles.Subtitles {
 		response.Subtitles = append(response.Subtitles, stremio.Subtitle{
-			ID:          sub.ID,
-			Lang:        subtitles.Lang,
-			URL:         fmt.Sprintf("%s/subdivx/%s", a.AddonHost, sub.ID),
-			SubEncoding: sub.Title,
+			ID:    sub.ID,
+			Lang:  subtitles.Lang,
+			URL:   fmt.Sprintf("%s/subdivx/%s", a.AddonHost, sub.ID),
+			Title: fmt.Sprintf("[subdivx] %s", sub.Title),
 		})
 	}
 
